@@ -10,9 +10,8 @@ using System.Text;
 
 namespace Auth.API.Controllers;
 
-[ApiController]
 [Route("api/auth")]
-public class AuthController : ControllerBase
+public class AuthController : MainController
 {
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly UserManager<IdentityUser> _userManager;
@@ -30,6 +29,8 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult> Register(RegisterUser registerUser) 
     {
+        if (!ModelState.IsValid) return CustomResponse(ModelState);
+
         var user = new IdentityUser
         {
             UserName = registerUser.Email,
@@ -39,27 +40,38 @@ public class AuthController : ControllerBase
 
         var result = await _userManager.CreateAsync(user, registerUser.Password);
 
-        //TESTE LOGIN AUTOMATICO
         if (result.Succeeded)
+            return CustomResponse(await GerarJwt(registerUser.Email));
+
+        foreach (var error in result.Errors) 
         {
-            await _signInManager.SignInAsync(user, false);
-            return Ok(await GerarJwt(registerUser.Email));
+            AdicionarErro(error.Description);
         }
 
-        return BadRequest();
+        return CustomResponse();
     }
 
     [HttpPost("login")]
     public async Task<ActionResult> Login(LoginUser userLogin)
     {
+        if (!ModelState.IsValid) return CustomResponse(ModelState);
+
         var result = await _signInManager.PasswordSignInAsync(userLogin.Email, userLogin.Password, false, true);
 
         if (result.Succeeded)
         {
-            return Ok(await GerarJwt(userLogin.Email));
+            return CustomResponse(await GerarJwt(userLogin.Email));
         }
 
-        return BadRequest();
+        if (result.IsLockedOut)
+        {
+            AdicionarErro("Usuário temporariamente bloqueado por tentativas inválidas");
+            return CustomResponse();
+        }
+
+        AdicionarErro("Usuário ou senha incorretos");
+
+        return CustomResponse();
     }
 
     private async Task<UserLoginResponse> GerarJwt(string email)
