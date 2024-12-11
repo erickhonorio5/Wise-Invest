@@ -1,0 +1,13 @@
+services:
+
+  identitydb:
+    image: mcr.microsoft.com/mssql/server:2022-preview-ubuntu-22.04
+
+  auth.api:
+    image: ${DOCKER_REGISTRY-}authapi
+    build:
+      context: .
+      dockerfile: Services/Auth/Auth.API/Dockerfile
+
+volumes:
+  sqlserver_identity:

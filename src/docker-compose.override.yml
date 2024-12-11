@@ -1,0 +1,35 @@
+services:
+
+  identitydb:
+    container_name: IdentityDb
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Admin@123
+      - MSSQL_PID=Express 
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_identity:/var/opt/mssql
+    networks:
+    - app_network
+
+  auth.api:
+    container_name: Auth.API
+    environment:
+      - ASPNETCORE_DOCKER=true
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+    depends_on:
+      - identitydb
+    ports:
+      - "6064:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    networks:
+    - app_network
+
+networks:
+  app_network:
+    driver: bridge
