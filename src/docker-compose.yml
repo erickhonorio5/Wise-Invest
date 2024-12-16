@@ -9,5 +9,12 @@ services:
       context: .
       dockerfile: Services/Auth/Auth.API/Dockerfile
 
+  yarp.api:
+    image: ${DOCKER_REGISTRY-}yarpapi
+    build:
+      context: .
+      dockerfile: Services/Yarp/Yarp.API/Dockerfile
+
 volumes:
   sqlserver_identity:
+

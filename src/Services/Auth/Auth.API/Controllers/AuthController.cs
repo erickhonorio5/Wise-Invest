@@ -1,5 +1,6 @@
 ﻿using Auth.API.Extensions;
 using Auth.API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -10,6 +11,7 @@ using System.Text;
 
 namespace Auth.API.Controllers;
 
+[Authorize]
 [Route("api/auth")]
 public class AuthController : MainController
 {
@@ -27,6 +29,7 @@ public class AuthController : MainController
     }
 
     [HttpPost("register")]
+    [AllowAnonymous]
     public async Task<ActionResult> Register(RegisterUser registerUser) 
     {
         if (!ModelState.IsValid) return CustomResponse(ModelState);
@@ -52,6 +55,7 @@ public class AuthController : MainController
     }
 
     [HttpPost("login")]
+    [AllowAnonymous]
     public async Task<ActionResult> Login(LoginUser userLogin)
     {
         if (!ModelState.IsValid) return CustomResponse(ModelState);

@@ -14,6 +14,7 @@ public static class IdentityConfig
     {
         services.AddIdentity<IdentityUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddErrorDescriber<IdentityMensagensPortugues>()
             .AddDefaultTokenProviders();
 
         //JWT

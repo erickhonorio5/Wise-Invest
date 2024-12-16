@@ -1,9 +1,6 @@
 using Auth.API.Configuration;
 using Auth.API.Data;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +12,7 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() 
     { 
-        Title = "Authentication and Authorization API", Version = "v1" ,
+        Title = "Auth.API", Version = "v1" ,
         Description = "API de autenticação"
     });
 });
